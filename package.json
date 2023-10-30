@@ -1,0 +1,25 @@
+{
+  "name": "abi-convert",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc --noEmit ./src/main.ts && esbuild src/main.ts --bundle --platform=node --outfile=dist/abi-convert.js",
+    "dev": "node dist/abi-convert.js"
+  },
+  "bin": {
+    "abi-convert": "./dist/abi-convert.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^11.1.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.19.5",
+    "rimraf": "^5.0.5",
+    "ts-node": "10.9.1",
+    "typescript": "^5.2.2"
+  }
+}
