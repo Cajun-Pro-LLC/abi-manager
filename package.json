@@ -1,6 +1,6 @@
 {
   "name": "@dirtycajunrice/abi-manager",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A CLI tool to help manage solidity ABI files",
   "main": "index.js",
   "scripts": {
@@ -8,16 +8,23 @@
     "dev": "node dist/abi-manager.js"
   },
   "bin": {
-    "abi-manager": "./dist/abi-manager.js"
+    "abi-manager": "dist/abi-manager.js"
   },
-  "keywords": ["abi", "cli", "manager"],
+  "keywords": [
+    "abi",
+    "cli",
+    "manager"
+  ],
   "author": {
     "name": "Nicholas St. Germain",
     "email": "nick@cajun.pro",
     "url": "https://cajun.pro"
   },
   "license": "ISC",
-  "repository": "https://github.com/Cajun-Pro-LLC/abi-manager.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cajun-Pro-LLC/abi-manager.git"
+  },
   "bugs": {
     "url": "https://github.com/Cajun-Pro-LLC/abi-manager/issues"
   },
