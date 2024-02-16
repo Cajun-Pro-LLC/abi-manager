@@ -1,25 +1,36 @@
 {
-  "name": "abi-convert",
+  "name": "@dirtycajunrice/abi-manager",
   "version": "1.0.0",
-  "description": "",
+  "description": "A CLI tool to help manage solidity ABI files",
   "main": "index.js",
   "scripts": {
-    "build": "tsc --noEmit ./src/main.ts && esbuild src/main.ts --bundle --platform=node --outfile=dist/abi-convert.js",
-    "dev": "node dist/abi-convert.js"
+    "build": "tsc --noEmit ./src/main.ts && esbuild src/main.ts --bundle --platform=node --outfile=dist/abi-manager.js",
+    "dev": "node dist/abi-manager.js"
   },
   "bin": {
-    "abi-convert": "./dist/abi-convert.js"
+    "abi-manager": "./dist/abi-manager.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["abi", "cli", "manager"],
+  "author": {
+    "name": "Nicholas St. Germain",
+    "email": "nick@cajun.pro",
+    "url": "https://cajun.pro"
+  },
   "license": "ISC",
+  "repository": "https://github.com/Cajun-Pro-LLC/abi-manager.git",
+  "bugs": {
+    "url": "https://github.com/Cajun-Pro-LLC/abi-manager/issues"
+  },
+  "homepage": "https://github.com/Cajun-Pro-LLC/abi-manager",
   "dependencies": {
-    "commander": "^11.1.0"
+    "abitype": "^1.0.0",
+    "commander": "^12.0.0"
   },
   "devDependencies": {
-    "esbuild": "0.19.5",
+    "@commander-js/extra-typings": "^12.0.0",
+    "esbuild": "0.20.0",
     "rimraf": "^5.0.5",
-    "ts-node": "10.9.1",
-    "typescript": "^5.2.2"
+    "ts-node": "10.9.2",
+    "typescript": "^5.3.3"
   }
 }

@@ -1,2 +1,2 @@
-export * from './convert';
-export * from './batch-convert';
+export { convert, batchConvert } from "./convert";
+export { trim } from "./trim";

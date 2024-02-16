@@ -1,43 +1,64 @@
-import * as fs from "fs";
-import * as path from "path";
+import { existsSync, lstatSync, readdirSync, unlinkSync, writeFileSync } from "fs";
+import { extname, join, resolve } from "path";
+import { WithGlobalOpts } from "../types/commands";
+import { getABI, getJSONFile } from "../util/file";
+import { formatABI } from "../util/format";
 
-export const convert = (abiPath: string, options: Record<string, string>) => {
-  internalConvert(abiPath, options);
+type ConvertOpts = {
+  output?: string;
+  destructive?: boolean;
 }
 
-export const internalConvert = (abiPathInput: string, options: Record<string, string>) => {
-  if (!fs.existsSync(abiPathInput)) {
-    return console.error(`${abiPathInput} does not exist`);
-  }
-  const abiPath = path.resolve(abiPathInput);
-  const stat = fs.lstatSync(abiPath);
-  if (stat.isDirectory()) {
-    return console.error(`${abiPath} is a directory. try batch-convert instead`);
-  }
-  if (stat.isFile()) {
-    if (path.extname(abiPath) !== ".json") {
-      return console.error(`${abiPath} is not a JSON file`);
-    }
+const converter = (abiPathInput: string, options: WithGlobalOpts<ConvertOpts>) => {
 
-    const name = path.basename(abiPath, ".json").replace(/abi$/i, "") + "ABI";
-    const file = path.resolve(options.output || path.join(path.dirname(abiPath), name + ".ts"));
-    const rawAbi: any[] | { abi: any[] } = JSON.parse(fs.readFileSync(abiPath, "utf-8"));
-    let abi: any[];
-    if (Array.isArray(rawAbi)) {
-      abi = rawAbi;
-    } else if ("abi" in rawAbi) {
-      abi = rawAbi.abi;
-    } else {
-      return console.error(`Invalid ABI file`);
-    }
-    const abiString = JSON.stringify(abi, null, 2);
-    const data = `const ${name} = ${abiString} as const;\n\nexport default ${name};\n`;
-    fs.writeFileSync(file, data);
-    console.log(`ABI file converted to ${file}`);
-    if (options.destructive) {
-      fs.unlinkSync(abiPath);
-      console.log(`Deleted ${abiPath}`);
-    }
-    return name;
+  const file = getJSONFile(abiPathInput, options.output);
+  const abi = getABI(file.in.path);
+
+  const abiString = formatABI(abi, options.friendlyAbis);
+  const data = `const ${file.out.name} = ${abiString} as const;\n\nexport default ${file.out.name};\n`;
+  writeFileSync(file.out.path, data);
+  console.log(`ABI file converted to ${file.out.path}`);
+  if (options.destructive) {
+    unlinkSync(file.in.path);
+    console.log(`Deleted ${file.in.path}`);
   }
+  return file.out.name;
+};
+
+export const convert = (abiPath: string, options: WithGlobalOpts<ConvertOpts>) => {
+  // shadow to return void
+  converter(abiPath, options);
+};
+
+type BatchConvertOpts = {
+  indexFile?: boolean;
+  destructive?: boolean;
 }
+export const batchConvert = (directoryPath: string, options: WithGlobalOpts<BatchConvertOpts>) => {
+  if (!existsSync(directoryPath)) {
+    return console.error(`${directoryPath} does not exist`);
+  }
+
+  const stat = lstatSync(directoryPath);
+  if (!stat.isDirectory()) {
+    return console.error(`${directoryPath} is not a directory.`);
+  }
+  const allFiles = readdirSync(directoryPath);
+  const jsonFiles = allFiles.filter(f => extname(f) === ".json");
+  const newFileNames: string[] = [];
+  for (const file of jsonFiles) {
+    const filePath = join(directoryPath, file);
+    const name = converter(filePath, options);
+    if (name) {
+      newFileNames.push(name);
+    }
+  }
+
+  if (newFileNames.length > 0 && options.indexFile) {
+    const data = newFileNames.map(name => `export * from "./${name}";`).join("\n") + "\n";
+    const file = resolve(join(directoryPath, "index.ts"));
+    writeFileSync(file, data);
+    console.log("Created index file:", file);
+  }
+  console.log(`${jsonFiles.length} ABI files converted!`);
+};
