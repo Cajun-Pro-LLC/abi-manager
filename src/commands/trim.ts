@@ -54,6 +54,6 @@ export const trim = (abiPathInput: string, options: WithGlobalOpts<TrimOpts>) =>
     }
   }
   console.log(`Trimmed ${abi.length - cleanAbi.length}/${abi.length} items from ${file.out.name}`);
-  const abiString = formatABI(abi, options.friendlyAbis);
+  const abiString = formatABI(cleanAbi, options.friendlyAbis);
   writeFileSync(options.inPlace ? file.in.path : file.out.path, abiString);
 };
