@@ -1,6 +1,6 @@
 {
   "name": "@dirtycajunrice/abi-manager",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A CLI tool to help manage solidity ABI files",
   "main": "index.js",
   "scripts": {
